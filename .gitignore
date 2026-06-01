@@ -1,0 +1,8 @@
+venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+store.db
+data/events.jsonl
+data/videos/*.mp4
+yolov8n.pt

@@ -1,0 +1,15 @@
+fastapi==0.116.1
+uvicorn==0.35.0
+sqlalchemy==2.0.43
+numpy==2.2.6
+pandas==2.3.2
+opencv-python==4.12.0.88
+ultralytics
+supervision
+streamlit==1.49.1
+shapely==2.1.1
+python-multipart==0.0.20
+pytest==8.4.1
+pydantic==2.11.7
+python-dateutil==2.9.0
+pypdf==6.12.2
