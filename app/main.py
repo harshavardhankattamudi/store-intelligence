@@ -69,7 +69,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "An internal system error occurred. Please try again later."}
     )
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
     return {
         "message": "Welcome to the Store Intelligence API",

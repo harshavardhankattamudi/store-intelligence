@@ -87,8 +87,14 @@ def _upsert_session(db_event: DBEvent, db: Session):
 
 def import_pos_csv(csv_path: str, db: Session):
     df = pd.read_csv(csv_path)
+    df_agg = df.groupby("order_id").agg({
+        "store_id": "first",
+        "order_time": "first",
+        "NMV": "sum"
+    }).reset_index()
+
     count = 0
-    for _, row in df.iterrows():
+    for _, row in df_agg.iterrows():
         txn_id = str(row["order_id"])
         exists = db.query(DBTransaction).filter(DBTransaction.transaction_id == txn_id).first()
         if not exists:
