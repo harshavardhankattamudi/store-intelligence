@@ -69,6 +69,14 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "An internal system error occurred. Please try again later."}
     )
 
+@app.get("/")
+def read_root():
+    return {
+        "message": "Welcome to the Store Intelligence API",
+        "docs_url": "/docs",
+        "health_url": "/health"
+    }
+
 @app.post("/events/ingest")
 def events_ingest(payload: list[dict], db: Session = Depends(get_db)):
     if len(payload) > 500:
