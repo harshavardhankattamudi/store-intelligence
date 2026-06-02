@@ -35,7 +35,8 @@ st.markdown("""
 st.title("Apex Retail - Live Store Analytics Dashboard")
 st.markdown("Real-time metrics, funnel drop-off rates, anomalies, and traffic heatmaps mapped from CCTV feeds.")
 
-API_URL = "http://127.0.0.1:8000"
+import os
+API_URL = os.getenv("BACKEND_API_URL", "http://127.0.0.1:8000")
 STORE_ID = "ST1008"
 
 st.sidebar.header("Settings")
