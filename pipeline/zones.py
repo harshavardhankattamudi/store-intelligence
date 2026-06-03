@@ -2,18 +2,18 @@ from shapely.geometry import Polygon, Point
 
 ZONES = {
     "CAM3": {
-        "ENTRY_EXIT": Polygon([(0, 800), (1920, 800), (1920, 1080), (0, 1080)]),
-        "ENTRY_GATEWAY": Polygon([(0, 600), (1920, 600), (1920, 800), (0, 800)])
+        "ENTRY_EXIT": Polygon([(0, 700), (1920, 700), (1920, 1080), (0, 1080)]),
+        "ENTRY_GATEWAY": Polygon([(0, 450), (1920, 450), (1920, 700), (0, 700)])
     },
     "CAM1": {
-        "SKINCARE": Polygon([(100, 100), (1800, 100), (1800, 980), (100, 980)])
+        "SKINCARE": Polygon([(0, 0), (1920, 0), (1920, 1080), (0, 1080)])
     },
     "CAM2": {
-        "MAKEUP": Polygon([(100, 100), (1800, 100), (1800, 980), (100, 980)])
+        "MAKEUP": Polygon([(0, 0), (1920, 0), (1920, 1080), (0, 1080)])
     },
     "CAM5": {
-        "BILLING": Polygon([(200, 200), (1700, 200), (1700, 980), (200, 980)]),
-        "COUNTER_STAFF": Polygon([(1200, 200), (1700, 200), (1700, 700), (1200, 700)])
+        "BILLING": Polygon([(0, 0), (1920, 0), (1920, 1080), (0, 1080)]),
+        "COUNTER_STAFF": Polygon([(1200, 100), (1920, 100), (1920, 800), (1200, 800)])
     },
     "CAM4": {
         "STAFF_ROOM": Polygon([(0, 0), (1920, 0), (1920, 1080), (0, 1080)])
@@ -28,6 +28,12 @@ def get_person_zone(camera_id: str, box) -> tuple[str, bool]:
     y = box[3]
     point = Point(x, y)
     
+    if camera_id == "CAM1":
+        if x < 960:
+            return "SKINCARE", False
+        else:
+            return "MAKEUP", False
+            
     zones_def = ZONES.get(camera_id, {})
     
     if camera_id == "CAM5":

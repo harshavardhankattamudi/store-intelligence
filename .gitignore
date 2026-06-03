@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 store.db
 data/events.jsonl
-data/videos/*.mp4
+data/videos/
+store-intelligence.zip
 yolov8n.pt

@@ -1,6 +1,7 @@
 import cv2
 import os
 import sys
+import argparse
 from datetime import datetime, timedelta
 from pipeline.detect import VideoPipeline
 
@@ -9,31 +10,45 @@ events_file = "data/events.jsonl"
 if os.path.exists(events_file):
     os.remove(events_file)
 
-def process_all_clips():
-    video_dir = "data/videos"
-    cameras = {
-        "CAM1": "CAM 1.mp4",
-        "CAM2": "CAM 2.mp4",
-        "CAM3": "CAM 3.mp4",
-        "CAM4": "CAM 4.mp4",
-        "CAM5": "CAM 5.mp4"
-    }
+def process_store_clips():
+    parser = argparse.ArgumentParser(description="Run Store Intelligence Detection Pipeline")
+    parser.add_argument("--store", type=str, default="Store1", choices=["Store1", "Store2"], help="Store to process (Store1 or Store2)")
+    args = parser.parse_args()
 
     start_time = datetime(2026, 4, 10, 12, 0, 0)
-    pipeline = VideoPipeline(store_id="ST1008")
+    
+    if args.store == "Store1":
+        video_dir = "data/videos/Store1"
+        store_id = "ST1008"
+        cameras = {
+            "CAM1": "CAM 1 - zone.mp4",
+            "CAM2": "CAM 2 - zone.mp4",
+            "CAM3": "CAM 3 - entry.mp4",
+            "CAM5": "CAM 5 - billing.mp4"
+        }
+    else:
+        video_dir = "data/videos/Store2"
+        store_id = "ST1076"
+        cameras = {
+            "CAM1": "zone.mp4",
+            "CAM3_1": "entry 1.mp4",
+            "CAM3_2": "entry 2.mp4",
+            "CAM5": "billing_area.mp4"
+        }
 
-    print("Starting Store Intelligence detection pipeline...")
+    pipeline = VideoPipeline(store_id=store_id)
+    print(f"Starting Store Intelligence detection pipeline for {args.store} (Store ID: {store_id})...")
 
     caps = {}
-    for cam_id, filename in cameras.items():
+    for logical_cam, filename in cameras.items():
         filepath = os.path.join(video_dir, filename)
         if not os.path.exists(filepath):
             print(f"Warning: File {filepath} not found. Skipping...")
             continue
-        caps[cam_id] = cv2.VideoCapture(filepath)
+        caps[logical_cam] = cv2.VideoCapture(filepath)
 
     if not caps:
-        print("No video files found inside data/videos! Pipeline execution halted.")
+        print(f"No video files found inside {video_dir}! Pipeline execution halted.")
         return
 
     frame_counter = 0
@@ -41,7 +56,7 @@ def process_all_clips():
     
     while True:
         active_caps = 0
-        for cam_id, cap in caps.items():
+        for logical_cam, cap in caps.items():
             if not cap.isOpened():
                 continue
                 
@@ -53,7 +68,8 @@ def process_all_clips():
                 time_offset = timedelta(seconds=int((frame_counter * 30) / fps))
                 current_time = start_time + time_offset
                 
-                pipeline.process_frame(frame, cam_id, current_time, frame_counter)
+                api_cam_id = logical_cam.split("_")[0]
+                pipeline.process_frame(frame, api_cam_id, current_time, frame_counter)
         
         if active_caps == 0:
             break
@@ -68,4 +84,4 @@ def process_all_clips():
     print(f"Pipeline complete! Events written to {events_file}")
 
 if __name__ == "__main__":
-    process_all_clips()
+    process_store_clips()
